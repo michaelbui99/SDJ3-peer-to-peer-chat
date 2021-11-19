@@ -4,46 +4,26 @@ import AddressServer.AddressServerImpl;
 import Peer.PeerImpl;
 
 import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
 import java.util.Scanner;
 
 public class Run
 {
-  public static void main(String[] args)
-  {
-    System.setProperty("java.security.policy", "security.policy");
-    if (System.getSecurityManager() == null){
-      System.setSecurityManager(new SecurityManager());
-    }
-    PeerImpl p1 = new PeerImpl();
-    p1.start();
-    while (true)
-    {
-      Scanner keyboard = new Scanner(System.in);
-      System.out.println("Set your alias: ");
-      p1.setAlias(keyboard.nextLine());
-      System.out.println("\n");
-      System.out.println("Who do you want to connect to?");
-      for (String alias : p1.getAllRegisteredPeers())
-      {
-        System.out.println(alias +  "\n");
-      }
+  public static void main(String[] args) throws RemoteException {
+    Scanner keyboard = new Scanner(System.in);
+    boolean connected = false;
+    Peer peer = new PeerImpl();
+    peer.start();
+    connected = true;
+    while (connected){
+      System.out.println("Enter receiver alias: ");
+      String receiverAlias = keyboard.nextLine();
+      System.out.println("Enter message: ");
+      String messageContent = keyboard.nextLine();
 
-      p1.connect(keyboard.nextLine());
-      System.out.println("");
-
-      boolean connected = true;
-      while (connected)
-      {
-        String message = keyboard.nextLine();
-        if (message.equals("PEERSYSTEM.DISCONNECT")){
-          connected = false;
-          System.out.println("You disconnected");
-        }
-        else
-        {
-          p1.sendMessage(message);
-        }
-      }
+      Message message = new Message(messageContent, receiverAlias, peer);
+      peer.sendMessage(message);
     }
+
   }
 }

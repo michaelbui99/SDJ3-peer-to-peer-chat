@@ -31,6 +31,7 @@ public class AddressServerImpl implements AddressServer
 
   @Override public void start()
   {
+    int currentPort = 1099;
     try
     {
       registry = LocateRegistry.createRegistry(1099);
